@@ -1,2 +1,2 @@
 # EZWork
-EZWork, AKA Easy Framework.
+EZWork, AKA Easy Framework for Unity.
