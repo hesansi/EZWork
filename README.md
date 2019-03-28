@@ -189,7 +189,7 @@ EZSceneLoader的实现。被动调用，不需要显示调用。
 |:--|:--|
 |`abstract IEnumerator UnloadPrevScene(UnityAction finish)`|卸载当前场景|
 |`abstract IEnumerator LoadNextScene(UnityAction finish)`|下一个场景|
-|`abstract IEnumerator UnloadLoadingScene()`|激活新场景，卸载Loading场景|
+|`abstract IEnumerator UnloadLoadingScene()`|卸载Loading场景|
 
 # EZLoadingView
 
