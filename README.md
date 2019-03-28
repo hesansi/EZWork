@@ -14,6 +14,7 @@
   - [PushSceneLoader](#pushsceneloader)
   - [PopSceneLoader](#popsceneloader)
 - [EZLoadingView](#ezloadingview)
+  - [Properties](#properties-1)
   - [Examples](#examples-3)
   
 # EZWork
@@ -195,11 +196,18 @@ EZSceneLoader的实现。被动调用，不需要显示调用。
 
 EZScene辅助类。负责Loading界面的个性化处理。
 
+## Properties
+
+|公开属性|介绍|
+|:--|:--|
+|`CurProgress`|当前进度|
+|`FirstProgress`|前半段进度，在此进度等待新场景加载完成|
+
 该类是抽象类，需继承该类，并重写2个抽象方法：
 
 |抽象方法|介绍|
 |:--|:--|
-|`abstract void InitView()`|定义初始化（进度条、进度文本或其他个性化处理）|
+|`abstract void InitView()`|初始化（进度条、进度文本或其他个性化处理）|
 |`abstract void UpdateView()`|从0到100刷新进度|
 
 ## Examples
