@@ -8,14 +8,14 @@
   - [Properties](#properties)
   - [Methods](#methods-1)
   - [Examples](#examples-2)
-- [EZSceneLoader](#ezsceneloader)
-  - [Remarks](#remarks)
-  - [NormalSceneLoader](#normalsceneloader)
-  - [PushSceneLoader](#pushsceneloader)
-  - [PopSceneLoader](#popsceneloader)
-- [EZLoadingView](#ezloadingview)
-  - [Properties](#properties-1)
-  - [Examples](#examples-3)
+  - [EZSceneLoader](#ezsceneloader)
+    - [Remarks](#remarks)
+    - [1. NormalSceneLoader](#1-normalsceneloader)
+    - [2. PushSceneLoader](#2-pushsceneloader)
+    - [3. PopSceneLoader](#3-popsceneloader)
+  - [EZLoadingView](#ezloadingview)
+    - [Properties](#properties-1)
+    - [Examples](#examples-3)
   
 # EZWork
 EZWork, AKA Easy Framework for Unity.
@@ -138,7 +138,7 @@ EZScene.Instance.Pop(EZLoadingType.Loading2);
 
 ```
 
-# EZSceneLoader
+## EZSceneLoader
 
 EZScene辅助类。衔接了"旧场景->Loading界面->新场景"整套流程。
 
@@ -152,11 +152,11 @@ EZScene辅助类。衔接了"旧场景->Loading界面->新场景"整套流程。
 
 EZSceneLoader 的3个实现类：`NormalSceneLoader`、`PushSceneLoader`、`PopSceneLoader`，分别重写了各自的抽象方法，应该已经够用。如果有特殊需求，可自行继承并实现。
 
-## Remarks
+### Remarks
 
 EZSceneLoader是整个场景处理流程中的一部分，抽象方法自动被依次调用，因此不需要显示调用。
 
-## NormalSceneLoader
+### 1. NormalSceneLoader
 
 EZSceneLoader的实现。被动调用，不需要显示调用。
 
@@ -168,7 +168,7 @@ EZSceneLoader的实现。被动调用，不需要显示调用。
 |`abstract IEnumerator LoadNextScene(UnityAction finish)`|加载下一个场景|
 |`abstract IEnumerator UnloadLoadingScene()`|卸载Loading场景|
 
-## PushSceneLoader
+### 2. PushSceneLoader
 
 EZSceneLoader的实现。被动调用，不需要显示调用。
 
@@ -180,7 +180,7 @@ EZSceneLoader的实现。被动调用，不需要显示调用。
 |`abstract IEnumerator LoadNextScene(UnityAction finish)`|加载下一个场景|
 |`abstract IEnumerator UnloadLoadingScene()`|激活新场景，卸载Loading场景|
 
-## PopSceneLoader
+### 3. PopSceneLoader
 
 EZSceneLoader的实现。被动调用，不需要显示调用。
 
@@ -192,11 +192,11 @@ EZSceneLoader的实现。被动调用，不需要显示调用。
 |`abstract IEnumerator LoadNextScene(UnityAction finish)`|下一个场景|
 |`abstract IEnumerator UnloadLoadingScene()`|卸载Loading场景|
 
-# EZLoadingView
+## EZLoadingView
 
 EZScene辅助类。负责Loading界面的个性化处理。
 
-## Properties
+### Properties
 
 |公开属性|介绍|
 |:--|:--|
@@ -210,7 +210,7 @@ EZScene辅助类。负责Loading界面的个性化处理。
 |`abstract void InitView()`|初始化（进度条、进度文本或其他个性化处理）|
 |`abstract void UpdateView()`|从0到100刷新进度|
 
-## Examples
+### Examples
 
 1. 新建一个类，继承EZLoadingView，抽象方法可以留空，或写个Log
 2. 在你的Loading场景中，选择一个已有物体，或新建一个空物体，将上一步重写的类挂上去
