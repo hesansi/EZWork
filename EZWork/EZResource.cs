@@ -5,19 +5,20 @@ using System;
 using UnityEngine;
 using System.Collections;
 using System.Linq;
+using TMPro;
 using UnityEngine.Events;
 using Object = UnityEngine.Object;
 
 namespace EZWork
 {
 	public enum AssetType{ Resource, AssetBundle }
-	public class EZResource : EZSingleton<EZResource>
+	public class EZResource : EZSingletonStatic<EZResource>
 	{
-		private EZResource() { }
+		protected EZResource() { }
 		//不同平台下StreamingAssets的路径不同
-		private static string ABPath;
-		private static string StreamingManifest;
-		private static AssetBundleManifest manifest;
+		private string ABPath;
+		private string StreamingManifest;
+		private AssetBundleManifest manifest;
 
 		private void Awake()
 		{
