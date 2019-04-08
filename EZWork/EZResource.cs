@@ -36,69 +36,83 @@ namespace EZWork
 		}
 
 		/// <summary>
-		/// 同步加载Resource文件下资源
+		/// Resource 同步 加载物体对象
 		/// </summary>
 		/// <param name="fileName">资源名</param>
 		/// <param name="isResForever">是否永远在Resource文件夹下；慎用；出包时会根据该参数决定是否加载AssetBundle</param>
 		public Object LoadRes(string fileName, bool isResForever = false)
 		{
-			return Resources.Load(fileName);
+			return LoadRes<Object>(fileName, isResForever);
 		}
 		
 		/// <summary>
-		/// 异步加载Resource文件下资源
+		/// Resource 同步 使用泛型加载Spite、Audio等非对象资源
+		/// </summary>
+		public T LoadRes<T>(string fileName, bool isResForever = false) where T:Object
+		{
+			return Resources.Load<T>(fileName);
+		}
+		
+		/// <summary>
+		/// Resource 异步 加载物体对象
 		/// </summary>
 		/// <param name="fileName">资源名</param>
 		/// <param name="callback">加载完成回调</param>
 		/// <param name="isResForever">是否永远在Resource文件夹下；慎用；出包时会根据该参数决定是否加载AssetBundle</param>
 		public void LoadResAsync(string fileName, UnityAction<Object> callback, bool isResForever = false)
 		{
-			Debug.LogFormat("~~~~~~ LoadResAsync {0} !", fileName);
-			StartCoroutine(LoadResAsyncProcess(fileName, callback));
-		}
-
-		private IEnumerator LoadResAsyncProcess(string fileName, UnityAction<Object> callback)
-		{
-			ResourceRequest req = Resources.LoadAsync(fileName);
-			while (!req.isDone)
-				yield return null;
-			callback(req.asset);
+			StartCoroutine(LoadResAsyncProcess<Object>(fileName, callback));
 		}
 
 		/// <summary>
-		/// 同步加载AssetBundle中资源：文件名与资源名相同
+		/// Resource 异步 使用泛型加载Spite、Audio等非对象资源
+		/// </summary>
+		public void LoadResAsync<T>(string fileName, UnityAction<T> callback, bool isResForever = false) where T:Object
+		{
+			Debug.LogFormat("~~~~~~ LoadResAsync {0} !", fileName);
+			StartCoroutine(LoadResAsyncProcess<T>(fileName, callback));
+		}
+
+		private IEnumerator LoadResAsyncProcess<T>(string fileName, UnityAction<T> callback) where T:Object
+		{
+			ResourceRequest req = Resources.LoadAsync<T>(fileName);
+			while (!req.isDone)
+				yield return null;
+			callback(req.asset as T);
+		}
+
+		/// <summary>
+		/// AB 同步：文件名与资源名相同
 		/// </summary>
 		/// <param name="fileName">AB文件名和资源名</param>
 		public Object LoadAB(string fileName)
 		{
-			fileName = fileName.ToLower();
-			AssetBundle ab = null;
-			if (!IsABExist(fileName, ref ab)) {
-				LoadABDependencies(fileName);
-			
-				var assetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(ABPath, fileName));
-				if (assetBundle == null) {
-					Debug.LogFormat(">>>>>> LoadAB {0} Failed!", fileName);
-					return null;
-				}
-				return assetBundle.LoadAsset(fileName);
-			}
-
-			if (ab) {
-				return ab.LoadAsset(fileName);
-			}
-
-			Debug.LogErrorFormat(">>>>>> Can't find {0} AssetBundle",fileName);
-			return null;
+			return LoadAB<Object>(fileName, fileName);
 		}
 		
 		/// <summary>
-		/// 同步加载AssetBundle中资源：文件名与资源名不同
+		/// AB 同步 使用泛型加载Spite、Audio等非对象资源：文件名与资源名相同
+		/// </summary>
+		public T LoadAB<T>(string fileName) where T:Object
+		{
+			return LoadAB<T>(fileName, fileName);
+		}
+		
+		/// <summary>
+		///  AB 同步：文件名与资源名不同
 		/// </summary>
 		/// <param name="fileName">AB文件名</param>
 		/// <param name="assetName">具体资源名</param>
 		public Object LoadAB(string fileName, string assetName)
 		{
+			return LoadAB<Object>(fileName, assetName);
+		}
+		
+		/// <summary>
+		/// AB 同步 使用泛型加载Spite、Audio等非对象资源：文件名与资源名不同
+		/// </summary>
+		public T LoadAB<T>(string fileName, string assetName) where T:Object
+		{
 			fileName = fileName.ToLower();
 			AssetBundle ab = null;
 			if (!IsABExist(fileName, ref ab)) {
@@ -109,11 +123,11 @@ namespace EZWork
 					Debug.LogFormat(">>>>>> LoadAB {0} Failed!", fileName);
 					return null;
 				}
-				return assetBundle.LoadAsset(assetName);
+				return assetBundle.LoadAsset<T>(assetName);
 			}
 
 			if (ab) {
-				return ab.LoadAsset(assetName);
+				return ab.LoadAsset<T>(assetName);
 			}
 
 			Debug.LogErrorFormat(">>>>>> Can't find {0} Asset",assetName);
@@ -122,46 +136,27 @@ namespace EZWork
 		
 		// 2.2.1 
 		/// <summary>
-		/// 异步加载AssetBundle中资源：文件名与资源名相同
+		/// AB 异步：文件名与资源名相同
 		/// </summary>
 		/// <param name="fileName">AB文件名</param>
 		/// <param name="callback">加载完成回调</param>
 		public void LoadABAsync(string fileName, UnityAction<Object> callback)
 		{
 			fileName = fileName.ToLower();
-			StartCoroutine(LoadABAsyncProcess(fileName, callback));
-		}
-		
-		private IEnumerator LoadABAsyncProcess(string fileName, UnityAction<Object> callback)
-		{
-			AssetBundle ab = null;
-			if (!IsABExist(fileName, ref ab)) {
-				
-				LoadABDependencies(fileName);
-			
-				AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(System.IO.Path.Combine(ABPath, fileName));
-				yield return request;
-
-				AssetBundle bundle = request.assetBundle;
-				if (bundle == null) {
-					Debug.LogErrorFormat(">>>>>> LoadABAsync {0} Failed!", fileName);
-					yield return null;
-				} else {
-					yield return LoadABAssetAsync(bundle, fileName, callback);
-				}
-			}
-			else {
-				if (ab)
-					yield return LoadABAssetAsync(ab, fileName, callback);
-				else {
-					Debug.LogErrorFormat(">>>>>> Can't find {0} AssetBundle",fileName);
-				}
-				
-			}
+			StartCoroutine(LoadABAsyncProcess<Object>(fileName, fileName, callback));
 		}
 		
 		/// <summary>
-		/// 异步加载AssetBundle中资源：文件名与资源名不同
+		/// AB 异步 使用泛型加载Spite、Audio等非对象资源：文件名与资源名相同
+		/// </summary>
+		public void LoadABAsync<T>(string fileName, UnityAction<T> callback) where T:Object
+		{
+			fileName = fileName.ToLower();
+			StartCoroutine(LoadABAsyncProcess<T>(fileName, fileName, callback));
+		}
+		
+		/// <summary>
+		/// AB 异步：文件名与资源名不同
 		/// </summary>
 		/// <param name="fileName">AB文件名</param>
 		/// <param name="assetName">具体资源名</param>
@@ -170,10 +165,20 @@ namespace EZWork
 		{
 			fileName = fileName.ToLower();
 			assetName = assetName.ToLower();
-			StartCoroutine(LoadABAsyncProcess(fileName, assetName, callback));
+			StartCoroutine(LoadABAsyncProcess<Object>(fileName, assetName, callback));
 		}
 		
-		private IEnumerator LoadABAsyncProcess(string fileName, string assetName, UnityAction<Object> callback)
+		/// <summary>
+		/// AB 异步 使用泛型加载Spite、Audio等非对象资源：文件名与资源名不同
+		/// </summary>
+		public void LoadABAsync<T>(string fileName, string assetName, UnityAction<T> callback) where T:Object
+		{
+			fileName = fileName.ToLower();
+			assetName = assetName.ToLower();
+			StartCoroutine(LoadABAsyncProcess<T>(fileName, assetName, callback));
+		}
+		
+		private IEnumerator LoadABAsyncProcess<T>(string fileName, string assetName, UnityAction<T> callback) where T:Object
 		{
 			AssetBundle ab = null;
 			if (!IsABExist(fileName, ref ab)) {
@@ -188,26 +193,26 @@ namespace EZWork
 					Debug.LogErrorFormat(">>>>>> LoadABAsync {0} Failed!", fileName);
 					yield return null;
 				} else {
-					yield return LoadABAssetAsync(bundle, assetName, callback);
+					yield return LoadABAssetAsync<T>(bundle, assetName, callback);
 				}
 			}
 			else {
 				if (ab)
-					yield return LoadABAssetAsync(ab, assetName, callback);
+					yield return LoadABAssetAsync<T>(ab, assetName, callback);
 				else {
 					Debug.LogErrorFormat(">>>>>> Can't find {0} AssetBundle",assetName);
 				}
 				
 			}
 		}
-
-		private IEnumerator LoadABAssetAsync(AssetBundle bundle, string assetName, UnityAction<Object> callback)
+		
+		private IEnumerator LoadABAssetAsync<T>(AssetBundle bundle, string assetName, UnityAction<T> callback) where T:Object
 		{
-			AssetBundleRequest req = bundle.LoadAssetAsync(assetName);
+			AssetBundleRequest req = bundle.LoadAssetAsync<T>(assetName);
 			while (!req.isDone)
 				yield return null;
 			if (req.asset) {
-				callback(req.asset);
+				callback(req.asset as T);
 			}
 			else {
 				Debug.LogErrorFormat(">>>>>> Can't find {0} Asset",assetName);
