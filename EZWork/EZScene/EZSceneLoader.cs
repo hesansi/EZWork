@@ -21,7 +21,6 @@ namespace EZWork
 
         private IEnumerator InitLoadingView(EZLoadingType loadingType)
         {
-            Debug.LogError("=== loadingType.ToString()"+loadingType.ToString());
             // 1. 加载Loading场景
             _loadingName = loadingType.ToString();
             yield return SceneManager.LoadSceneAsync(_loadingName, LoadSceneMode.Additive);
@@ -66,6 +65,8 @@ namespace EZWork
         // 衔接 loadingView.EndProgress() 和 UnloadLoadingScene() 
         private void ProcessLoadingView()
         {
+            if (EZScene.NextSceneActived!=null) 
+                EZScene.NextSceneActived();
             loadingView.EndProgress(() => StartCoroutine(UnloadLoadingScene()));
         }
 

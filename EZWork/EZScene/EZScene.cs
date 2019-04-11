@@ -1,8 +1,8 @@
 ﻿// Author: He Juncheng
 // Created: 2019/03/18
 
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace EZWork
@@ -11,6 +11,7 @@ namespace EZWork
     {
         protected EZScene() { }
         public static Stack<string> PrevSceneStack, NextSceneStack;
+        public static Action NextSceneActived;
         private EZSceneLoader _sceneLoader;
 
         /// <summary>
@@ -18,6 +19,7 @@ namespace EZWork
         /// </summary>
         public void Load(string nextSceneName, EZLoadingType loadingType = EZLoadingType.LoadingScene1)
         {
+            ClearActions();
             ClearStack();
             RefreshStack(nextSceneName);
 
@@ -29,6 +31,7 @@ namespace EZWork
         
         public void Push(string nextSceneName, EZLoadingType loadingType = EZLoadingType.LoadingScene1)
         {
+            ClearActions();
             RefreshStack(nextSceneName);
             
             if (GetComponent<PushSceneLoader>() == null) 
@@ -38,6 +41,7 @@ namespace EZWork
         
         public void Pop(EZLoadingType loadingType = EZLoadingType.LoadingScene1)
         {
+            ClearActions();
             if (GetComponent<PopSceneLoader>() == null) 
                 _sceneLoader = gameObject.AddComponent<PopSceneLoader>();
             _sceneLoader.Load(loadingType);
@@ -62,6 +66,11 @@ namespace EZWork
             
             if (NextSceneStack != null) 
                 NextSceneStack.Clear();
+        }
+
+        private void ClearActions()
+        {
+            NextSceneActived = null;
         }
     }
 }

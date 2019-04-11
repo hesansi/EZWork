@@ -19,14 +19,15 @@ namespace EZWork
         
         protected override IEnumerator LoadNextScene(UnityAction finish)
         {
-            Scene preScene = SceneManager.GetSceneByName(EZScene.PrevSceneStack.Pop());
+            Scene preScene = SceneManager.GetSceneByName(EZScene.PrevSceneStack.Peek());
             Debug.Log(">>>>>> Pop prevButCurrentScene.name: "+preScene.name);
             // 显示前一个场景
             foreach (var go in preScene.GetRootGameObjects()) {
                 go.SetActive(true);
             }
-            finish();
             yield return null;
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(EZScene.PrevSceneStack.Pop()));
+            finish();
         }
         
         protected override IEnumerator UnloadLoadingScene()
