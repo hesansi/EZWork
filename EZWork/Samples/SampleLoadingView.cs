@@ -49,7 +49,7 @@ public class SampleLoadingView : EZLoadingView
             float percent = CurProgress / 90f;
             ProgressSlider.value = percent;
             ProgressText.text = percent.ToString("F");
-            // 60帧暂停，等待下个场景加载完毕后调用 FinishView()
+            // 60帧暂停，等待下个场景加载完毕后调用 ResumeProgress()
             // 下面判断等价于 if(CurProgress == 60)，为了防止浮点数漂移
             if (Math.Abs(CurProgress - 60) < 0.01f) {
                 PauseProgress();
