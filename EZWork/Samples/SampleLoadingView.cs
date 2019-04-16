@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine.UI;
 using EZWork;
@@ -14,14 +15,14 @@ public class SampleLoadingView : EZLoadingView
     {
         FirstProgress = 30;
         // 个性化处理：暂停进度，等待进入动画完成
-        ProgressScale = 0;
+        PauseProgress();
         ProgressSlider = FindObjectOfType<Slider>();
         ProgressText = ProgressSlider.transform.Find("ProgressText").GetComponent<TextMeshProUGUI>();
         CanvasGroup = transform.Find("LoadingCanvas").GetComponent<CanvasGroup>();
+        AnimateIn();
     }
 
-    // 入场动画
-    private bool isAnimatedIn = false;
+    // 1. 入场动画
     private void AnimateIn()
     {
         CanvasGroup.DOFade(1, 2f).OnComplete(() =>
@@ -30,8 +31,7 @@ public class SampleLoadingView : EZLoadingView
         });
     }
 
-    // 出场动画
-    private bool isAnimatedOut = false;
+    // 2. 出场动画
     private void AnimateOut()
     {
         // 室内室外摄像机排序方式不同
@@ -44,25 +44,24 @@ public class SampleLoadingView : EZLoadingView
 
     protected override void UpdateView()
     {
-        // 1. 入场动画
-        if (!isAnimatedIn) {
-            isAnimatedIn = true;
-            AnimateIn();
-        }
-        
-        // 前80帧走到头
-        if (!isAnimatedOut) {
-            float percent = CurProgress / 80f;
+        if (ProgressScale > 0) {
+            // 前90帧就走到头；因为100帧将自动卸载Loading场景
+            float percent = CurProgress / 90f;
             ProgressSlider.value = percent;
             ProgressText.text = percent.ToString("F");
-            // 最后20帧，先淡出；然后走到100，自动移除Loading
-            if (CurProgress >= 80) {
-                ProgressScale = 0f;
-                isAnimatedOut = true;
-                AnimateOut();
+            // 60帧暂停，等待下个场景加载完毕后调用 FinishView()
+            // 下面判断等价于 if(CurProgress == 60)，为了防止浮点数漂移
+            if (Math.Abs(CurProgress - 60) < 0.01f) {
+                PauseProgress();
             }
+            // 90帧到头了，处理Loading淡出（淡出后，继续走到100，卸载Loading场景）
+            // 下面判断等价于 if(CurProgress == 90)，为了防止浮点数漂移
+            if (Math.Abs(CurProgress - 90f) < 0.01f) {
+                PauseProgress();
+                AnimateOut();
+            } 
         }
-
     }
+    
     
 }

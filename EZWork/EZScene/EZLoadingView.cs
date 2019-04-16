@@ -65,6 +65,22 @@ namespace EZWork
         }
 
         /// <summary>
+        /// 暂停进度，做些特殊处理：入场、出场、等待
+        /// </summary>
+        public virtual void PauseProgress()
+        {
+            ProgressScale = 0;
+        }
+
+        /// <summary>
+        /// 如果新场景具有额外的加载或初始化过程，希望处理完毕后，能够通知Loading继续加载，则可以重写并利用该方法
+        /// </summary>
+        public virtual void ResumeProgress(float scale = 0.5f)
+        {
+            ProgressScale = scale;
+        }
+
+        /// <summary>
         /// 刷新进度
         /// </summary>
         private IEnumerator UpdateProgress(float toProgress, UnityAction finish = null)
