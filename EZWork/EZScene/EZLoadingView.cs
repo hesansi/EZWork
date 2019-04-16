@@ -73,7 +73,7 @@ namespace EZWork
         }
 
         /// <summary>
-        /// 如果新场景具有额外的加载或初始化过程，希望处理完毕后，能够通知Loading继续加载，则可以重写并利用该方法
+        /// 如果新场景具有额外的加载或初始化过程，希望处理完毕后，能够通知Loading继续加载，则可以利用该方法
         /// </summary>
         public virtual void ResumeProgress(float scale = 0.5f)
         {
