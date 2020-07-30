@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EZWork
 {
-    public class EZGrid : EZSingleton<EZGrid>
+    public class EZGrid:MonoBehaviour
     {
         protected EZGrid() { }
         // 行

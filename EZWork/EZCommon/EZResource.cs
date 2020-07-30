@@ -8,10 +8,16 @@ using System.Linq;
 using TMPro;
 using UnityEngine.Events;
 using Object = UnityEngine.Object;
-
+using System.Collections.Generic;
 namespace EZWork
 {
 	public enum AssetType{ Resource, AssetBundle }
+    public enum EZAssetBundleName
+    {
+        XlsxBytes,
+        ItemIcon,
+        UIPrefab,
+    }
 	public class EZResource : EZSingletonStatic<EZResource>
 	{
 		protected EZResource() { }
@@ -177,33 +183,31 @@ namespace EZWork
 			assetName = assetName.ToLower();
 			StartCoroutine(LoadABAsyncProcess<T>(fileName, assetName, callback));
 		}
-		
+		private Dictionary<string,AssetBundleCreateRequest> AssetBundleCreateRequestDictionary = new Dictionary<string,AssetBundleCreateRequest>();
 		private IEnumerator LoadABAsyncProcess<T>(string fileName, string assetName, UnityAction<T> callback) where T:Object
 		{
-			AssetBundle ab = null;
-			if (!IsABExist(fileName, ref ab)) {
-				
-				LoadABDependencies(fileName);
-			
+            if(AssetBundleCreateRequestDictionary.ContainsKey(fileName))
+            {
+                while(AssetBundleCreateRequestDictionary[fileName] == null)
+                {
+                    yield return null;
+                }
+            }
+            else
+            {
+                AssetBundleCreateRequestDictionary.Add(fileName,null);
+                LoadABDependencies(fileName);
 				AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(System.IO.Path.Combine(ABPath, fileName));
 				yield return request;
-
-				AssetBundle bundle = request.assetBundle;
-				if (bundle == null) {
-					Debug.LogErrorFormat(">>>>>> LoadABAsync {0} Failed!", fileName);
-					yield return null;
-				} else {
-					yield return LoadABAssetAsync<T>(bundle, assetName, callback);
-				}
-			}
-			else {
-				if (ab)
-					yield return LoadABAssetAsync<T>(ab, assetName, callback);
-				else {
-					Debug.LogErrorFormat(">>>>>> Can't find {0} AssetBundle",assetName);
-				}
-				
-			}
+                AssetBundleCreateRequestDictionary[fileName] = request;
+            }
+            AssetBundle bundle = AssetBundleCreateRequestDictionary[fileName].assetBundle;
+            if (bundle == null) {
+                Debug.LogErrorFormat(">>>>>> LoadABAsync {0} Failed!", fileName);
+                yield return null;
+            } else {
+                yield return LoadABAssetAsync<T>(bundle, assetName, callback);
+            }
 		}
 		
 		private IEnumerator LoadABAssetAsync<T>(AssetBundle bundle, string assetName, UnityAction<T> callback) where T:Object
