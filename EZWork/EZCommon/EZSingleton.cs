@@ -89,7 +89,7 @@ namespace EZWork
     }
     
     /// 与 EZSingletonMono 实现完全一致，已废弃。为了兼容老版本而存在
-    public class EZSingletonMonoStatic<T> : MonoBehaviour where T : MonoBehaviour
+    public class EZSingletonStatic<T> : MonoBehaviour where T : MonoBehaviour
     {
         private static T _instance;
         private static object _lock = new object();
