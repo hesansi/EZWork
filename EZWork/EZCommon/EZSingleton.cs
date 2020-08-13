@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Reflection;
+using UnityEngine;
 
 namespace EZWork
 {
-    public class EZSingleton<T> where T : new()
+    /// 注意：子类必须实现一个"私有构造函数"
+    public class EZSingleton<T> where T : class
     {
         private static T _instance;
         private static readonly object objlock = new object();
@@ -14,7 +17,14 @@ namespace EZWork
                 if (_instance == null) {
                     lock (objlock) {
                         if (_instance == null) {
-                            _instance = new T();
+                            Type type = typeof(T);
+                            // 这里确保没有其它的public构造函数了，没有可以通过其它方法new这个类
+                            ConstructorInfo[] ctors = type.GetConstructors();
+                            if (ctors.Length > 0)
+                            {
+                                throw new InvalidOperationException(String.Format("{0} has at least Constructors", type.Name));
+                            }
+                            _instance = (T)Activator.CreateInstance(type, true);
                         }
                     }
                 }
