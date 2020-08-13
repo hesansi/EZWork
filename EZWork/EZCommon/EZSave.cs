@@ -25,7 +25,7 @@ namespace EZWork
 
         private string prefix = "20200326/";
 
-        public void InitRecord(string path)
+        public void InitRecord(string path = "Default")
         {
             
             path = prefix + path;
@@ -37,7 +37,7 @@ namespace EZWork
         /// <summary>
         /// 存档保存
         /// </summary>
-        public void SaveRecord<T>(string key, T value,string recordPath)
+        public void SaveRecord<T>(string key, T value,string recordPath = "Default")
         {
             recordPath = prefix + recordPath;
             ES3.Save<T>(key, value, recordPath, Settings);
@@ -45,7 +45,7 @@ namespace EZWork
         /// <summary>
         /// 存档加载
         /// </summary>
-        public T LoadRecord<T>(string key,string recordPath) where T:new()
+        public T LoadRecord<T>(string key,string recordPath = "Default") where T:new()
         {
             recordPath = prefix + recordPath;
             if (ES3.KeyExists(key, recordPath)) {
@@ -59,7 +59,7 @@ namespace EZWork
         /// <summary>
         /// 删除存档
         /// </summary>
-        public void DeletRecord(string path)
+        public void DeletRecord(string path = "Default")
         {
             path = prefix + path;
             if (ES3.FileExists(path)) {
