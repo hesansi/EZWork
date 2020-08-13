@@ -1,0 +1,21 @@
+{
+    "PrefsList": [
+        {
+            "prefsName": "GameTable",
+            "combineClassName": "GameTable",
+            "InputPaths": [
+                "Assets/Tools/Tabtoy/example/GameConfig/Xlsxs/GameTable_Index.xlsx"
+            ],
+            "CodeOutputPath": "Assets/Tools/Tabtoy/example/GameConfig/Scripts/GameTable.cs",
+            "DataOutputPath": "Assets/Tools/Tabtoy/example/GameConfig/Resources/GameTable.bytes",
+            "ExportJson": false,
+            "ExportLua": false,
+            "ExportPartialClass": true,
+            "ShareClass": false
+        }
+    ],
+    "CacheInputDirectory": "Assets/Tools/Tabtoy/example/GameConfig/Xlsxs",
+    "CacheCodeOutputDirectory": "Assets/Tools/Tabtoy/example/GameConfig/Scripts",
+    "CacheDataOutputDirectory": "Assets/Tools/Tabtoy/example/GameConfig/Resources",
+    "Version": "1.0.0"
+}
