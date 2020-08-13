@@ -71,6 +71,14 @@ namespace EZWork
                 return ScreenRatioEnum.SCREEN_16_9;
             if ( ratio == Math.Round(21f/9, 2)) 
                 return ScreenRatioEnum.SCREEN_21_9;
+            if ( ratio == Math.Round(2f/3, 2)) 
+                return ScreenRatioEnum.SCREEN_3_2;
+            if ( ratio == Math.Round(3f/4, 2)) 
+                return ScreenRatioEnum.SCREEN_4_3;
+            if ( ratio == Math.Round(9f/16, 2)) 
+                return ScreenRatioEnum.SCREEN_16_9;
+            if ( ratio == Math.Round(9f/21, 2)) 
+                return ScreenRatioEnum.SCREEN_21_9;
             return ScreenRatioEnum.SCREEN_OTHER;
         }
 
@@ -84,6 +92,10 @@ namespace EZWork
         SCREEN_4_3,
         SCREEN_16_9,
         SCREEN_21_9,
+        SCREEN_2_3,
+        SCREEN_3_4,
+        SCREEN_9_16,
+        SCREEN_9_21,
         SCREEN_OTHER
     }
 }
