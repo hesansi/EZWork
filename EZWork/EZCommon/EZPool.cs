@@ -14,7 +14,7 @@ namespace EZWork
         public bool shouldExpand = true;
     }
 
-    public class EZPool : EZSingleton<EZPool>
+    public class EZPool : EZSingletonMono<EZPool>
     {
         private const string DefaultRootObjectPoolName = "(singleton) EZWork.EZPool";
         // 默认父对象：所有缓存池都在该对象下
@@ -31,34 +31,11 @@ namespace EZWork
             }
             set => rootPoolName = value;
         }
-        [SerializeField]
+
         // 所有缓存对象列表
-        private List<EZPoolItem> pooledObjects;
-        private List<EZPoolItem> PooledObjects
-        {
-            get
-            {
-                if (pooledObjects == null) {
-                    pooledObjects = new List<EZPoolItem>();
-                }
-                return pooledObjects;
-            }
-            set => pooledObjects = value;
-        }
-        [SerializeField]
+        private Dictionary<string, List<EZPoolItem>> PooledObjects = new Dictionary<string,  List<EZPoolItem>>();
         // 不同类型或缓存池对象列表
-        private List<EZPoolItem> itemsToPool;
-        private List<EZPoolItem> ItemsToPool
-        {
-            get
-            {
-                if (itemsToPool == null) {
-                    itemsToPool = new List<EZPoolItem>();
-                }
-                return itemsToPool;
-            }
-            set => itemsToPool = value;
-        }
+        private Dictionary<string, EZPoolItem> ItemsToPool = new Dictionary<string, EZPoolItem>();
 
         /// <summary>
         /// 注册缓存池
@@ -69,17 +46,16 @@ namespace EZWork
         /// <param name="shouldExpand">是否自动扩展</param>
         public void Regist(string poolName, GameObject poolObject, int poolAmount = 2, bool shouldExpand = true)
         {
-            foreach (EZPoolItem item in ItemsToPool) {
-                if (item.poolName.Equals(poolName)) {
-                    return;
-                }
+            if (ItemsToPool.ContainsKey(poolName)){
+                return;
             }
+            
             EZPoolItem pItem = new EZPoolItem();
             pItem.poolObject = poolObject;
             pItem.poolName = poolName;
             pItem.poolAmount = poolAmount;
             pItem.shouldExpand = shouldExpand;
-            ItemsToPool.Add(pItem);
+            ItemsToPool.Add(poolName, pItem);
 
             for (int i = 0; i < poolAmount; i++) {
                 CreatePooledObject(pItem);
@@ -93,17 +69,20 @@ namespace EZWork
         /// <returns></returns>
         public GameObject Create(string poolName)
         {
-            // 如果已存在且够用，则直接返回
-            for (int i = 0; i < PooledObjects.Count; i++) {
-                if (!PooledObjects[i].poolObject.activeInHierarchy && PooledObjects[i].poolName.Equals(poolName))
-                    return PooledObjects[i].poolObject;
-            }
-            // 如果不够用,则新建
-            foreach (EZPoolItem item in ItemsToPool) {
-                if (item.poolName.Equals(poolName)) {
-                    return CreatePooledObject(item);
+            // 1. 如果已存在，则直接返回
+            if (PooledObjects.ContainsKey(poolName)){
+                foreach (EZPoolItem poolItem in PooledObjects[poolName]){
+                    // 1.1 如果有空闲的
+                    if (!poolItem.poolObject.activeInHierarchy){
+                        return poolItem.poolObject;
+                    }
                 }
+                // 1.2 如果没有空闲的，新增
+                return CreatePooledObject(ItemsToPool[poolName]);
             }
+            // 2. 如果不存在（即：没有 Rigister 就直接 Create）不考虑这种情况
+            
+            
             // 如果不存在，则报错
             Debug.LogError("EZPool.Get("+poolName+") not exist!");
             return null;
@@ -120,11 +99,10 @@ namespace EZWork
 
         private GameObject CreatePooledObject(EZPoolItem item)
         {
-            GameObject obj = Instantiate<GameObject>(item.poolObject);
-
-            // Get the parent for this pooled object and assign the new object to it
+            // 设置父物体
             var parentPoolObject = GetParentPoolObject(item.poolName+"Pool");
-            obj.transform.parent = parentPoolObject.transform;
+            // 注意：一定要实例化，不能直接用原来的
+            GameObject obj = Instantiate(item.poolObject, parentPoolObject.transform, true);
             obj.SetActive(false);
             
             EZPoolItem pItem = new EZPoolItem();
@@ -132,8 +110,12 @@ namespace EZWork
             pItem.poolName = item.poolName;
             pItem.poolAmount = item.poolAmount;
             pItem.shouldExpand = item.shouldExpand;
+
+            if (!PooledObjects.ContainsKey(item.poolName)){
+                PooledObjects.Add(item.poolName, new List<EZPoolItem>());
+            }
             
-            PooledObjects.Add(pItem);
+            PooledObjects[item.poolName].Add(pItem);
             return obj;
         }
         

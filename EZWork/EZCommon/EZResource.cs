@@ -18,7 +18,7 @@ namespace EZWork
         ItemIcon,
         UIPrefab,
     }
-	public class EZResource : EZSingletonStatic<EZResource>
+	public class EZResource : EZSingletonMono<EZResource>
 	{
 		protected EZResource() { }
 		//不同平台下StreamingAssets的路径不同

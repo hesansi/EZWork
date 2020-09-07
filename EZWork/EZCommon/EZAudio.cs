@@ -558,73 +558,7 @@ namespace EZWork
 
 	}
 
-    public partial class EZAudio
-    {
-        public static void PlayWindowStatusSound(bool isOpen = true, float volume = 1.0f)
-        {
-            PlaySESound(isOpen ? SEAudioEnum.SE_select : SEAudioEnum.SE_cancel, volume);
-        }
-        public static void PlayPauseSound(float volume = 1.0f)
-        {
-            PlaySESound(SEAudioEnum.SE_puase, volume);
-        }
-        
-        public static void PlayDuDuDuSound(float volume = 1.0f)
-        {
-            PlaySESound(SEAudioEnum.SE_dududu, volume);
-        }
-
-        public static void PlaySESound(SEAudioEnum se,float volume = 1.0f)
-        {
-            Play(string.Format("GamePlayAudio/System/{0}",se.ToString()),1,EZAudioEnum.SOUND,volume);
-        }
-        
-    }
-    public partial class EZAudio
-    {
-        public static void PlayClassBgm()
-        {
-            PlaySEBGM(BGMAudioEnum.BGM_Minigame);
-        }
-
-        public static void PlaySEBGM(BGMAudioEnum bgm)
-        {
-            BGMusicManager.Instance.PlaySpecial(string.Format("GamePlayAudio/Bgm/{0}", bgm.ToString()));
-            //PlayBGM(string.Format("GamePlayAudio/Bgm/{0}", bgm.ToString()));
-        }
-    }
-    public enum BGMAudioEnum
-    {
-        BGM_SweetDream =0,
-        BGM_MusicUp,
-        BGM_SadStory,
-        BGM_Tension,
-        BGM_FunnyBro,
-        BGM_DayTime,
-        BGM_MysteryMen,
-        BGM_Eve,
-        BGM_Darkbar,
-        BGM_Minigame
-    }
-
-    public enum SEAudioEnum
-    {
-        SE_dududu = 0,
-        SE_select,
-        SE_cancel,
-        SE_minigame_ready,
-        SE_minigame_go,
-        SE_minigame_hit,
-        SE_minigame_OK,
-        SE_minigame_clear,
-        SE_minigame_timeup,
-        SE_puase,//这个名字 表里的文件名和项目中的文件名不一样
-        SE_minigame_target_comp,
-        SE_minigame_canculating,
-        School_Bell
-    }
-
-    public enum EZAudioEnum
+	public enum EZAudioEnum
 	{
 		SOUND,
 		MUSIC
